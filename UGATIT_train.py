@@ -148,19 +148,23 @@ for epoch in range(num_epochs):
 		#前のイテレーションでたまった傾きをリセット
 		optimizerD.zero_grad()
 
+		#本物画像から偽物画像を生成
 		fake_A2B, _, _ = netG_A2B(real_A)
 		fake_B2A, _, _ = netG_B2A(real_B)
 
+		#本物画像に対しそれぞれ判定
 		real_GA_logit, real_GA_cam_logit, _ = netD_GA(real_A)
 		real_LA_logit, real_LA_cam_logit, _ = netD_LA(real_A)
 		real_GB_logit, real_GB_cam_logit, _ = netD_GB(real_B)
 		real_LB_logit, real_LB_cam_logit, _ = netD_LB(real_B)
 
+		#偽物画像に対しそれぞれ判定
 		fake_GA_logit, fake_GA_cam_logit, _ = netD_GA(fake_B2A)
 		fake_LA_logit, fake_LA_cam_logit, _ = netD_LA(fake_B2A)
 		fake_GB_logit, fake_GB_cam_logit, _ = netD_GB(fake_A2B)
 		fake_LB_logit, fake_LB_cam_logit, _ = netD_LB(fake_A2B)
 
+		#損失の計算
 		D_ad_loss_GA = MSE_loss(real_GA_logit, torch.ones_like(real_GA_logit).to(device)) + MSE_loss(fake_GA_logit, torch.zeros_like(fake_GA_logit).to(device))
 		D_ad_cam_loss_GA = MSE_loss(real_GA_cam_logit, torch.ones_like(real_GA_cam_logit).to(device)) + MSE_loss(fake_GA_cam_logit, torch.zeros_like(fake_GA_cam_logit).to(device))
 		D_ad_loss_LA = MSE_loss(real_LA_logit, torch.ones_like(real_LA_logit).to(device)) + MSE_loss(fake_LA_logit, torch.zeros_like(fake_LA_logit).to(device))
@@ -188,20 +192,25 @@ for epoch in range(num_epochs):
 		#前のイテレーションでたまった傾きをリセット
 		optimizerG.zero_grad()
 
+		#本物画像から偽物画像を生成
 		fake_A2B, fake_A2B_cam_logit, _ = netG_A2B(real_A)
 		fake_B2A, fake_B2A_cam_logit, _ = netG_B2A(real_B)
 
+		#偽物画像から本物に戻ってくるのを目指す
 		fake_A2B2A, _, _ = netG_B2A(fake_A2B)
 		fake_B2A2B, _, _ = netG_A2B(fake_B2A)
 
+		#変換先と同じドメインの本物画像から偽物画像を生成
 		fake_A2A, fake_A2A_cam_logit, _ = netG_B2A(real_A)
 		fake_B2B, fake_B2B_cam_logit, _ = netG_A2B(real_B)
 
+		#生成された偽物画像についてそれぞれ判定
 		fake_GA_logit, fake_GA_cam_logit, _ = netD_GA(fake_B2A)
 		fake_LA_logit, fake_LA_cam_logit, _ = netD_LA(fake_B2A)
 		fake_GB_logit, fake_GB_cam_logit, _ = netD_GB(fake_A2B)
 		fake_LB_logit, fake_LB_cam_logit, _ = netD_LB(fake_A2B)
 
+		#損失の計算
 		G_ad_loss_GA = MSE_loss(fake_GA_logit, torch.ones_like(fake_GA_logit).to(device))
 		G_ad_cam_loss_GA = MSE_loss(fake_GA_cam_logit, torch.ones_like(fake_GA_cam_logit).to(device))
 		G_ad_loss_LA = MSE_loss(fake_LA_logit, torch.ones_like(fake_LA_logit).to(device))
