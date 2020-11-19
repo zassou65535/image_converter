@@ -1,0 +1,6 @@
+dataset/
+__pycache__/
+output/
+trained_model/
+convertion/
+.DS_Store
