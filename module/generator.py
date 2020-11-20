@@ -74,7 +74,7 @@ class Generator(nn.Module):
         self.UpBlock2 = nn.Sequential(*UpBlock2)
 
     def forward(self, input):
-        #論文中で、Encoderと呼ばれている層を通す
+        #論文中で、Encoderと呼ばれている層に通す
         x = self.DownBlock(input)
 
         gap = torch.nn.functional.adaptive_avg_pool2d(x, 1)
@@ -97,6 +97,7 @@ class Generator(nn.Module):
         x_ = self.FC(x.view(x.shape[0], -1))
         gamma, beta = self.gamma(x_), self.beta(x_)
 
+        #論文中で、Decoderと呼ばれている層に通す
         #n_blocks=6個分のResnetBlockに通す
         for i in range(self.n_blocks):
             x = getattr(self, 'UpBlock1_' + str(i+1))(x, gamma, beta)
