@@ -11,7 +11,7 @@ dataroot_A = './dataset/group_A/**/*'
 #データセットBの、各データへのパスのフォーマット
 dataroot_B = './dataset/group_B/**/*'
 #バッチサイズ
-batch_size = 1
+batch_size = 3
 #エポック数
 num_epochs = 1110
 #generator,discriminatorのoptimizerに使う学習率
