@@ -297,12 +297,12 @@ for epoch in range(num_epochs):
 		fake_A2A_heatmap = F.interpolate(fake_A2A_heatmap,size=(256,256))
 		fake_A2B_heatmap = F.interpolate(fake_A2B_heatmap,size=(256,256))
 		fake_A2B2A_heatmap = F.interpolate(fake_A2B2A_heatmap,size=(256,256))
-		output_how_much_progress("./output/epoch_{}/heatmap_A.png".format(epoch+1).format(epoch+1),[fake_A2A_heatmap,fake_A2B_heatmap,fake_A2B2A_heatmap],normalize=False)
+		output_how_much_progress("./output/epoch_{}/heatmap_A.png".format(epoch+1).format(epoch+1),[fake_A2A_heatmap,fake_A2B_heatmap,fake_A2B2A_heatmap])
 		#ヒートマップ(B)の出力
 		fake_B2B_heatmap = F.interpolate(fake_B2B_heatmap,size=(256,256))
 		fake_B2A_heatmap = F.interpolate(fake_B2A_heatmap,size=(256,256))
 		fake_B2A2B_heatmap = F.interpolate(fake_B2A2B_heatmap,size=(256,256))
-		output_how_much_progress("./output/epoch_{}/heatmap_B.png".format(epoch+1).format(epoch+1),[fake_B2B_heatmap,fake_B2A_heatmap,fake_B2A2B_heatmap],normalize=False)
+		output_how_much_progress("./output/epoch_{}/heatmap_B.png".format(epoch+1).format(epoch+1),[fake_B2B_heatmap,fake_B2A_heatmap,fake_B2A2B_heatmap])
 	#テスト用break
 	#break
 
