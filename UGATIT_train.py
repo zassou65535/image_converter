@@ -94,14 +94,14 @@ sample_real_A = make_sample(dataroot_A,sample_image_num).to(device)
 sample_real_B = make_sample(dataroot_B,sample_image_num).to(device)
 
 #学習過程を追うための、画像出力用関数
-def output_how_much_progress(filename,imgs):
+def output_how_much_progress(filename,imgs,normalize=True):
 	#引数はfilename以外はいずれもtorch.Size([sample_image_num,3,256,256])
 	output_imgs = []
 	for im in imgs:
 		output_imgs.append(torchvision.utils.make_grid(im,nrow=sample_image_num,padding=10))
 	output_imgs = torch.stack(output_imgs,dim=0)
 	output_imgs = torchvision.utils.make_grid(output_imgs,nrow=1,padding=100)
-	vutils.save_image(output_imgs,filename,normalize=True)
+	vutils.save_image(output_imgs,filename,normalize=normalize)
 
 #学習開始
 print("Starting Training")
@@ -265,22 +265,44 @@ for epoch in range(num_epochs):
 		if not os.path.exists(output_dir):
 			os.makedirs(output_dir)
 		#画像の生成と出力
+		#デバイスに配置されている画像をcpuに移す関数
+		def move_to_cpu(imgs_on_device):
+			imgs_on_cpu = []
+			for im in imgs_on_device:
+				imgs_on_cpu.append(im.detach().cpu())
+			return tuple(imgs_on_cpu)
+		
 		fake_A2B, _, fake_A2B_heatmap = netG_A2B(sample_real_A)
 		fake_B2A, _, fake_B2A_heatmap = netG_B2A(sample_real_B)
 
 		fake_A2B2A, _, fake_A2B2A_heatmap = netG_B2A(fake_A2B)
 		fake_B2A2B, _, fake_B2A2B_heatmap = netG_A2B(fake_B2A)
 
+		fake_A2B,fake_A2B_heatmap = move_to_cpu([fake_A2B,fake_A2B_heatmap])
+		fake_B2A,fake_B2A_heatmap = move_to_cpu([fake_B2A,fake_B2A_heatmap])
+		fake_A2B2A,fake_A2B2A_heatmap = move_to_cpu([fake_A2B2A,fake_A2B2A_heatmap])
+		fake_B2A2B,fake_B2A2B_heatmap = move_to_cpu([fake_B2A2B,fake_B2A2B_heatmap])
+
 		fake_A2A, _, fake_A2A_heatmap = netG_B2A(sample_real_A)
 		fake_B2B, _, fake_B2B_heatmap = netG_A2B(sample_real_B)
+
+		fake_A2A,fake_A2A_heatmap = move_to_cpu([fake_A2A,fake_A2A_heatmap])
+		fake_B2B,fake_B2B_heatmap = move_to_cpu([fake_B2B,fake_B2B_heatmap])
+		sr_A,sr_B = move_to_cpu([sample_real_A,sample_real_B])
 		#A->B->Aの画像の出力
-		output_how_much_progress("./output/epoch_{}/conversion_A2B2A.png".format(epoch+1),[sample_real_A,fake_A2B,fake_A2B2A])
+		output_how_much_progress("./output/epoch_{}/conversion_A2B2A.png".format(epoch+1),[sr_A,fake_A2B,fake_A2B2A])
 		#B->A->Bの画像の出力
-		output_how_much_progress("./output/epoch_{}/conversion_B2A2B.png".format(epoch+1),[sample_real_B,fake_B2A,fake_B2A2B])
+		output_how_much_progress("./output/epoch_{}/conversion_B2A2B.png".format(epoch+1),[sr_B,fake_B2A,fake_B2A2B])
 		#ヒートマップ(A)の出力
-		output_how_much_progress("./output/epoch_{}/heatmap_A.png".format(epoch+1),[sample_real_A,fake_A2A_heatmap[0],fake_A2B_heatmap[0],fake_A2B2A_heatmap[0]])
+		fake_A2A_heatmap = F.interpolate(fake_A2A_heatmap,size=(256,256))
+		fake_A2B_heatmap = F.interpolate(fake_A2B_heatmap,size=(256,256))
+		fake_A2B2A_heatmap = F.interpolate(fake_A2B2A_heatmap,size=(256,256))
+		output_how_much_progress("./output/epoch_{}/heatmap_A.png".format(epoch+1).format(epoch+1),[fake_A2A_heatmap,fake_A2B_heatmap,fake_A2B2A_heatmap],normalize=False)
 		#ヒートマップ(B)の出力
-		output_how_much_progress("./output/epoch_{}/heatmap_B.png".format(epoch+1),[sample_real_B,fake_B2B_heatmap[0],fake_B2A_heatmap[0],fake_B2A2B_heatmap[0]])
+		fake_B2B_heatmap = F.interpolate(fake_B2B_heatmap,size=(256,256))
+		fake_B2A_heatmap = F.interpolate(fake_B2A_heatmap,size=(256,256))
+		fake_B2A2B_heatmap = F.interpolate(fake_B2A2B_heatmap,size=(256,256))
+		output_how_much_progress("./output/epoch_{}/heatmap_B.png".format(epoch+1).format(epoch+1),[fake_B2B_heatmap,fake_B2A_heatmap,fake_B2A2B_heatmap],normalize=False)
 	#テスト用break
 	break
 
