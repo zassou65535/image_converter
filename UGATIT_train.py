@@ -249,7 +249,7 @@ for epoch in range(num_epochs):
 
 		iteration += 1
 		#テスト用break
-		break
+		#break
 	
 	#後で出力するためにepochごとにlossの平均を取り記録
 	G_losses.append(torch.mean(torch.tensor(G_losses_per_epoch,dtype=torch.float64)).item())
@@ -304,7 +304,7 @@ for epoch in range(num_epochs):
 		fake_B2A2B_heatmap = F.interpolate(fake_B2A2B_heatmap,size=(256,256))
 		output_how_much_progress("./output/epoch_{}/heatmap_B.png".format(epoch+1).format(epoch+1),[fake_B2B_heatmap,fake_B2A_heatmap,fake_B2A2B_heatmap],normalize=False)
 	#テスト用break
-	break
+	#break
 
 #学習にかかった時間を出力
 #学習終了時の時間を記録
