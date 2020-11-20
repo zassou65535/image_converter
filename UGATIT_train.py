@@ -11,7 +11,7 @@ dataroot_A = './dataset/group_A/**/*'
 #データセットBの、各データへのパスのフォーマット
 dataroot_B = './dataset/group_B/**/*'
 #バッチサイズ
-batch_size = 3
+batch_size = 1
 #エポック数
 num_epochs = 1110
 #generator,discriminatorのoptimizerに使う学習率
@@ -94,12 +94,11 @@ sample_real_A = make_sample(dataroot_A,sample_image_num).to(device)
 sample_real_B = make_sample(dataroot_B,sample_image_num).to(device)
 
 #学習過程を追うための、画像出力用関数
-def output_how_much_progress(filename,img_origin,img_converted,img_return):
+def output_how_much_progress(filename,imgs):
 	#引数はfilename以外はいずれもtorch.Size([sample_image_num,3,256,256])
 	output_imgs = []
-	output_imgs.append(torchvision.utils.make_grid(img_origin,nrow=sample_image_num,padding=10))
-	output_imgs.append(torchvision.utils.make_grid(img_converted,nrow=sample_image_num,padding=10))
-	output_imgs.append(torchvision.utils.make_grid(img_return,nrow=sample_image_num,padding=10))
+	for im in imgs:
+		output_imgs.append(torchvision.utils.make_grid(im,nrow=sample_image_num,padding=10))
 	output_imgs = torch.stack(output_imgs,dim=0)
 	output_imgs = torchvision.utils.make_grid(output_imgs,nrow=1,padding=100)
 	vutils.save_image(output_imgs,filename,normalize=True)
@@ -250,37 +249,40 @@ for epoch in range(num_epochs):
 
 		iteration += 1
 		#テスト用break
-		#break
+		break
 	
 	#後で出力するためにepochごとにlossの平均を取り記録
 	G_losses.append(torch.mean(torch.tensor(G_losses_per_epoch,dtype=torch.float64)).item())
 	D_losses.append(torch.mean(torch.tensor(D_losses_per_epoch,dtype=torch.float64)).item())
 	#Generatorの学習状況を画像として記録
-	if (epoch % output_progress_interval == 0):
+	if (epoch % output_progress_interval == 0 or (epoch+1)==num_epochs):
 		#ネットワークを推論モードにする
 		netG_A2B.eval(),netG_B2A.eval()
 		netD_GA.eval(),netD_GB.eval()
 		netD_LA.eval(),netD_LB.eval()
 		#画像出力用ディレクトリがなければ作成
-		output_dir = "./output/epoch_{}".format(epoch)
+		output_dir = "./output/epoch_{}".format(epoch+1)
 		if not os.path.exists(output_dir):
 			os.makedirs(output_dir)
+		#画像の生成と出力
+		fake_A2B, _, fake_A2B_heatmap = netG_A2B(sample_real_A)
+		fake_B2A, _, fake_B2A_heatmap = netG_B2A(sample_real_B)
+
+		fake_A2B2A, _, fake_A2B2A_heatmap = netG_B2A(fake_A2B)
+		fake_B2A2B, _, fake_B2A2B_heatmap = netG_A2B(fake_B2A)
+
+		fake_A2A, _, fake_A2A_heatmap = netG_B2A(sample_real_A)
+		fake_B2B, _, fake_B2B_heatmap = netG_A2B(sample_real_B)
 		#A->B->Aの画像の出力
-		sample_A = sample_real_A.detach()
-		sample_A2B,_,_ = netG_A2B(sample_A)
-		sample_A2B = sample_A2B.detach()
-		sample_A2B2A,_,_ = netG_B2A(sample_A2B)
-		sample_A2B2A = sample_A2B2A.detach()
-		output_how_much_progress("./output/epoch_{}/A2B2A.png".format(epoch),sample_A.cpu(),sample_A2B.cpu(),sample_A2B2A.cpu())
+		output_how_much_progress("./output/epoch_{}/conversion_A2B2A.png".format(epoch+1),[sample_real_A,fake_A2B,fake_A2B2A])
 		#B->A->Bの画像の出力
-		sample_B = sample_real_B.detach()
-		sample_B2A,_,_ = netG_B2A(sample_B)
-		sample_B2A = sample_B2A.detach()
-		sample_B2A2B,_,_ = netG_A2B(sample_B2A)
-		sample_B2A2B = sample_B2A2B.detach()
-		output_how_much_progress("./output/epoch_{}/B2A2B.png".format(epoch),sample_B.cpu(),sample_B2A.cpu(),sample_B2A2B.cpu())
+		output_how_much_progress("./output/epoch_{}/conversion_B2A2B.png".format(epoch+1),[sample_real_B,fake_B2A,fake_B2A2B])
+		#ヒートマップ(A)の出力
+		output_how_much_progress("./output/epoch_{}/heatmap_A.png".format(epoch+1),[sample_real_A,fake_A2A_heatmap[0],fake_A2B_heatmap[0],fake_A2B2A_heatmap[0]])
+		#ヒートマップ(B)の出力
+		output_how_much_progress("./output/epoch_{}/heatmap_B.png".format(epoch+1),[sample_real_B,fake_B2B_heatmap[0],fake_B2A_heatmap[0],fake_B2A2B_heatmap[0]])
 	#テスト用break
-	#break
+	break
 
 #学習にかかった時間を出力
 #学習終了時の時間を記録
@@ -292,30 +294,6 @@ with open('./output/time.txt', mode='w') as f:
 	f.write("dataset_B size: {}\n".format(len(path_list_B)))
 	f.write("num_epochs: {}\n".format(num_epochs))
 	f.write("batch_size: {}\n".format(batch_size))
-
-#本物画像と生成画像の出力
-#ネットワークを推論モードにする
-netG_A2B.eval(),netG_B2A.eval()
-netD_GA.eval(),netD_GB.eval()
-netD_LA.eval(),netD_LB.eval()
-#画像出力用ディレクトリがなければ作成
-output_dir = "./output/final_results"
-if not os.path.exists(output_dir):
-	os.makedirs(output_dir)
-#A->B->Aの画像の出力
-sample_A = sample_real_A.detach()
-sample_A2B,_,_ = netG_A2B(sample_A)
-sample_A2B = sample_A2B.detach()
-sample_A2B2A,_,_ = netG_B2A(sample_A2B)
-sample_A2B2A = sample_A2B2A.detach()
-output_how_much_progress("./output/final_results/A2B2A.png",sample_A.cpu(),sample_A2B.cpu(),sample_A2B2A.cpu())
-#B->A->Bの画像の出力
-sample_B = sample_real_B.detach()
-sample_B2A,_,_ = netG_B2A(sample_B)
-sample_B2A = sample_B2A.detach()
-sample_B2A2B,_,_ = netG_A2B(sample_B2A)
-sample_B2A2B = sample_B2A2B.detach()
-output_how_much_progress("./output/final_results/B2A2B.png",sample_B.cpu(),sample_B2A.cpu(),sample_B2A2B.cpu())
 
 #学習済みGeneratorのモデル（CPU向け）を出力
 #モデル出力用ディレクトリがなければ作成
