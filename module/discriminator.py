@@ -43,7 +43,6 @@ class Discriminator(nn.Module):
     def forward(self, input):
         #論文中で、Encoderと呼ばれている層を通す
         x = self.model(input)
-        print("x:",x.shape)
 
         #平均を取る操作によって
         # x  : torch.Size([batch_size,channel,Height,Width])を
@@ -81,7 +80,6 @@ class Discriminator(nn.Module):
         #heatmap : torch.Size([batch_size,1,Height,Width])
         heatmap = torch.sum(x, dim=1, keepdim=True)
 
-        print(x.shape)
         #self.pad = nn.ReflectionPad2d(1)を適用
         x = self.pad(x)
         #この時点で
