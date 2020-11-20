@@ -15,7 +15,7 @@ train_dataset = GAN_Img_Dataset(file_list=path_list,transform=ImageTransform(256
 dataloader = torch.utils.data.DataLoader(train_dataset,batch_size=len(path_list),shuffle=False)
 target = next(iter(dataloader))
 #generatorへ入力、出力画像を得る
-converted = generator.forward(target).detach()
+converted,_,_ = generator.forward(target)
 #画像出力用にディレクトリを作成
 os.makedirs("./convertion/converted",exist_ok=True)
 #画像を出力
