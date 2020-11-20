@@ -67,7 +67,7 @@ class adaILN(nn.Module):
         out = out * gamma.unsqueeze(2).unsqueeze(3) + beta.unsqueeze(2).unsqueeze(3)
         return out
 
-#adaILNの、gamma=1.0,beta=0.0に固定したバージョン
+#adaILNの、rho=0.0,gamma=1.0,beta=0.0に固定したバージョン
 class ILN(nn.Module):
     def __init__(self, num_features, eps=1e-5):
         super(ILN,self).__init__()
