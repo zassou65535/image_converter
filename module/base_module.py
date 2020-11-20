@@ -87,16 +87,3 @@ class ILN(nn.Module):
         out = self.rho.expand(input.shape[0], -1, -1, -1) * out_in + (1-self.rho.expand(input.shape[0], -1, -1, -1)) * out_ln
         out = out * self.gamma.expand(input.shape[0], -1, -1, -1) + self.beta.expand(input.shape[0], -1, -1, -1)
         return out
-
-#Network.apply(Rho_clipper)とすることで、
-#Network中の'rho'とつくパラメーターの値を[0,1]に制限できる
-class RhoClipper(object):
-    def __init__(self, min, max):
-        self.clip_min = min
-        self.clip_max = max
-
-    def __call__(self, module):
-        if hasattr(module, 'rho'):
-            w = module.rho.data
-            w = w.clamp(self.clip_min, self.clip_max)
-            module.rho.data = w

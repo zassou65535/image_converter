@@ -72,9 +72,6 @@ beta2 = 0.999
 optimizerG = torch.optim.Adam(itertools.chain(netG_A2B.parameters(),netG_B2A.parameters()),lr=learning_rate,betas=(beta1,beta2),weight_decay=weight_decay)
 optimizerD = torch.optim.Adam(itertools.chain(netD_GA.parameters(),netD_GB.parameters(),netD_LA.parameters(),netD_LB.parameters()),lr=learning_rate,betas=(beta1,beta2),weight_decay=weight_decay)
 
-#AdaILNとILNのパラメーターを[0,1]の範囲に制限するためのモジュールを宣言
-Rho_Clipper = RhoClipper(0,1)
-
 #イテレーションを全部で何回実行することになるかを計算
 iteration_per_epoch = len(path_list_A) if len(path_list_A)<len(path_list_B) else len(path_list_B)
 total_iteration = num_epochs*iteration_per_epoch
@@ -241,10 +238,6 @@ for epoch in range(num_epochs):
 		Generator_loss.backward()
 		#generatorのパラメーターを更新
 		optimizerG.step()
-
-		#AdaILNとILNのパラメーターを[0,1]の範囲に制限する
-		netG_A2B.apply(Rho_Clipper)
-		netG_B2A.apply(Rho_Clipper)
 
 		#後でグラフに出力するために記録
 		G_losses_per_epoch.append(Generator_loss.item())
