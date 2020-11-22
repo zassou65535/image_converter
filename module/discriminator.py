@@ -30,7 +30,7 @@ class Discriminator(nn.Module):
                   
         self.model = nn.Sequential(*model)
 
-        # Class Activation Map
+        #CAM用モジュール類を定義
         mult = 2 ** (n_layers - 2)
         self.gap_fc = nn.utils.spectral_norm(nn.Linear(ndf * mult, 1, bias=False))
         self.gmp_fc = nn.utils.spectral_norm(nn.Linear(ndf * mult, 1, bias=False))
@@ -47,6 +47,7 @@ class Discriminator(nn.Module):
         #平均を取る操作によって
         # x  : torch.Size([batch_size,channel,Height,Width])を
         #gap : torch.Size([batch_size,channel,1,1])に変換する
+        # = Global Average Poolingを実行
         gap = torch.nn.functional.adaptive_avg_pool2d(x, 1)
         #gap_logit : torch.Size([batch_size,1])
         gap_logit = self.gap_fc(gap.view(x.shape[0], -1))
@@ -59,6 +60,7 @@ class Discriminator(nn.Module):
         #最大値を取る操作によって
         # x  : torch.Size([batch_size,channel,Height,Width])を
         #gmp : torch.Size([batch_size,channel,1,1])に変換する
+        # = Global Max Poolingを実行
         gmp = torch.nn.functional.adaptive_max_pool2d(x, 1)
         #gmp_logit : torch.Size([batch_size,1])
         gmp_logit = self.gmp_fc(gmp.view(x.shape[0], -1))
