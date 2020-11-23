@@ -13,7 +13,7 @@ dataroot_B = './dataset/group_B/**/*'
 #バッチサイズ
 batch_size = 1
 #エポック数
-num_epochs = 200
+num_epochs = 160
 #generator,discriminatorのoptimizerに使う学習率
 learning_rate = 0.0001
 #Adamのweight decay(重み減衰)の度合い
