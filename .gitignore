@@ -2,5 +2,5 @@ dataset/
 __pycache__/
 output/
 trained_model/
-convertion/
+conversion/
 .DS_Store

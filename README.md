@@ -22,10 +22,10 @@ python 3.7.1
 	* 学習の過程が`./output`以下に出力されます。
 	* 学習済みモデルが`./trained_model/generator_A2B_trained_model_cpu.pth`として出力されます。
 ### 推論の実行
-1. `UGATIT_inference.py`のあるディレクトリに`./convertion`ディレクトリを作成します
-1. `./convertion`内に`target`ディレクトリを作成し、Aに属する画像を好きな数入れます。
-1. `UGATIT_inference.py`の置いてあるディレクトリで`python UGATIT_inference.py`を実行して`./convertion/target`内の画像をBへ変換します
-	* A→Bの変換結果が`./convertion/converted/`以下に出力されます。
+1. `UGATIT_inference.py`のあるディレクトリに`./conversion`ディレクトリを作成します
+1. `./conversion`内に`target`ディレクトリを作成し、Aに属する画像を好きな数入れます。
+1. `UGATIT_inference.py`の置いてあるディレクトリで`python UGATIT_inference.py`を実行して`./conversion/target`内の画像をBへ変換します
+	* A→Bの変換結果が`./conversion/converted/`以下に出力されます。
 	* 注意点として、`./trained_model`内に学習済みモデル`generator_A2B_trained_model_cpu.pth`がなければエラーとなります
 
 学習には環境によっては12時間以上要する場合があります。    
