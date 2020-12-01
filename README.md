@@ -1,7 +1,7 @@
 # image_converter
 ## 概要
 メルアイコン変換器で用いたソースコードです。  
-詳しい解説は<a href="https://qiita.com/zassou65535/private/4bc42fa36203c13fe2d3">こちら</a>。
+詳しい解説は<a href="https://qiita.com/zassou65535/items/4bc42fa36203c13fe2d3">こちら</a>。
 
 ## 想定環境
 python 3.7.1  
