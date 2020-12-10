@@ -4,7 +4,7 @@
 詳しい解説は<a href="https://qiita.com/zassou65535/items/4bc42fa36203c13fe2d3">こちら</a>。
 
 ## 想定環境
-python 3.7.1  
+python 3.7.1, VRAM32GB以上  
 `pip install -r requirements.txt`で環境を揃えることができます。 
 
 ## プログラム
