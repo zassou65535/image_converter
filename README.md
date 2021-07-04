@@ -1,11 +1,11 @@
 # image_converter
 ## 概要
-メルアイコン変換器で用いたソースコードです。  
+メルアイコン変換器で用いた、<a href="https://arxiv.org/abs/1907.10830">UGATIT</a>のpytorch実装です。  
 詳しい解説は<a href="https://qiita.com/zassou65535/items/4bc42fa36203c13fe2d3">こちら</a>。
 
 ## 想定環境
 python 3.7.1, VRAM32GB以上  
-`pip install -r requirements.txt`で環境を揃えることができます。 
+`pip install -r requirements.txt`でライブラリを揃えることができます。 
 
 ## プログラム
 * `UGATIT_train.py`は学習を実行し、学習の過程と学習済みモデルを出力するプログラムです。  
