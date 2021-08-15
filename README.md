@@ -1,7 +1,7 @@
 # image_converter
 ## 概要
 
-<img src="https://github.com/zassou65535/image_converter/example.png" width="70%">
+<img src="https://github.com/zassou65535/image_converter/blob/main/example.png" width="70%">
 
 メルアイコン変換器で用いた、<a href="https://arxiv.org/abs/1907.10830">UGATIT</a>のpytorch実装です。  
 詳しい解説は<a href="https://qiita.com/zassou65535/items/4bc42fa36203c13fe2d3">こちら</a>。
