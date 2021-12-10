@@ -33,3 +33,7 @@ python 3.7.1, VRAM32GB以上
 
 学習には環境によっては12時間以上要する場合があります。    
 入力された画像は256×256にリサイズされた上で学習に使われます。出力画像も256×256です。 
+
+## 参考
+<a href="https://arxiv.org/abs/1907.10830">U-GAT-IT: Unsupervised Generative Attentional Networks with Adaptive Layer-Instance Normalization for Image-to-Image Translation</a>  
+<a href="https://github.com/znxlwm/UGATIT-pytorch">U-GAT-IT — Official PyTorch Implementation</a>  
