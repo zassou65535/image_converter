@@ -8,6 +8,8 @@
 
 ## 想定環境
 python 3.7.1, VRAM32GB以上  
+torch==1.4.0  
+torchvision==0.5.0  
 `pip install -r requirements.txt`でライブラリを揃えることができます。 
 
 ## プログラム
